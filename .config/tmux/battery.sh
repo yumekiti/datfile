@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
 # バッテリー残量を「文字ブロックのバー」で出す（特殊フォント不要、どの環境でも確実に表示される）
 
-info=$(pmset -g batt 2>/dev/null) || exit 0
-pct=$(printf '%s' "$info" | grep -Eo '[0-9]+%' | head -1 | tr -d '%')
-[ -z "$pct" ] && exit 0
+if [ "$(uname -s)" = "Darwin" ]; then
+  info=$(pmset -g batt 2>/dev/null) || exit 0
+  pct=$(printf '%s' "$info" | grep -Eo '[0-9]+%' | head -1 | tr -d '%')
+  [ -z "$pct" ] && exit 0
 
-charging=0
-printf '%s' "$info" | grep -qE 'AC attached|charging' && charging=1
-printf '%s' "$info" | grep -q 'discharging' && charging=0
+  charging=0
+  printf '%s' "$info" | grep -qE 'AC attached|charging' && charging=1
+  printf '%s' "$info" | grep -q 'discharging' && charging=0
+else
+  batt=$(ls -d /sys/class/power_supply/BAT* 2>/dev/null | head -1)
+  [ -z "$batt" ] && exit 0
+
+  pct=$(cat "$batt/capacity" 2>/dev/null)
+  [ -z "$pct" ] && exit 0
+
+  status=$(cat "$batt/status" 2>/dev/null)
+  charging=0
+  [ "$status" = "Charging" ] || [ "$status" = "Full" ] && charging=1
+fi
 
 filled=$(( (pct + 10) / 20 ))
 [ "$filled" -gt 5 ] && filled=5

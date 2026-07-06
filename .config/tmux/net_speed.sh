@@ -6,12 +6,21 @@
 # 同時に読み書きしても、書きかけの壊れた行を掴んで変な値になるのを防ぐ）。
 # 数値部分は幅を固定しているので、桁数が変わってもステータスバー全体がガタつかない。
 
-IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
-[ -z "$IFACE" ] && IFACE="en0"
+if [ "$(uname -s)" = "Darwin" ]; then
+  IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
+  [ -z "$IFACE" ] && IFACE="en0"
+else
+  IFACE=$(ip route show default 2>/dev/null | awk '{print $5; exit}')
+fi
 
 CACHE="${TMPDIR:-/tmp}/tmux_net_${IFACE}"
 
-read -r rx tx < <(netstat -ibn 2>/dev/null | awk -v i="$IFACE" '$1==i{print $7, $10; exit}')
+if [ "$(uname -s)" = "Darwin" ]; then
+  read -r rx tx < <(netstat -ibn 2>/dev/null | awk -v i="$IFACE" '$1==i{print $7, $10; exit}')
+else
+  rx=$(cat "/sys/class/net/${IFACE}/statistics/rx_bytes" 2>/dev/null)
+  tx=$(cat "/sys/class/net/${IFACE}/statistics/tx_bytes" 2>/dev/null)
+fi
 now=$(date +%s)
 
 if [ -z "$rx" ] || [ -z "$tx" ]; then

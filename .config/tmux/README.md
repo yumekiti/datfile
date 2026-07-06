@@ -120,3 +120,4 @@ prefix → r
 
 - `net_speed.sh` はキャッシュを `${TMPDIR}/tmux_net_<インターフェース名>` に保存し、複数クライアントが同時にアタッチしても壊れないよう一時ファイル→rename の原子的書き込みにしてある。
 - `#(...)` で呼ぶ外部コマンドはtmuxのジョブ機構により**クライアントがアタッチしている時だけ**評価される。デタッチ状態で `tmux display-message` 等から値を覗いても空になるのは仕様（バグではない）。
+- `net_speed.sh` / `cpu.sh` / `battery.sh` は macOS (Darwin) と Linux の両方で動くよう `uname -s` で分岐している（macOS: `route`/`netstat`/`sysctl`/`pmset`、Linux: `ip route`/`/sys/class/net/*/statistics`/`/proc/loadavg`/`/sys/class/power_supply/BAT*`）。バッテリーが無い環境（Linuxのデスクトップ等）ではBattery表示自体が出ないのが仕様。
