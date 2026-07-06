@@ -20,30 +20,36 @@ git clone git@github.com:yumekiti/datfile.git ~/codes/datfile
 
 ### tmux設定の配置
 
-既存の `~/.config/tmux` がある場合は退避してからリンクを張る。
+既存の `~/.config/tmux` は上書きしてリンクを張る。
 
 ```bash
-# 既存設定があれば退避（無ければ何もしない）
-[ -e ~/.config/tmux ] && mv ~/.config/tmux ~/.config/tmux.bak
-
+rm -rf ~/.config/tmux
 mkdir -p ~/.config
 ln -s ~/codes/datfile/.config/tmux ~/.config/tmux
 ```
 
-反映確認:
+起動確認:
+
+```bash
+tmux
+```
+
+新規セッション開始時に自動でこの設定が読み込まれる。すでにセッションを起動済みで設定だけ
+反映したい場合はセッション内で `prefix → r`、またはセッション内のシェルで
 
 ```bash
 tmux source-file ~/.config/tmux/tmux.conf
 ```
 
+を実行する（tmuxサーバー未起動の状態でこれを実行すると
+`error connecting to /tmp/tmux-0/default` になるだけで、上の「起動」を先にすればよい）。
+
 ### nvim設定の配置
 
-既存の `~/.config/nvim` がある場合は退避してからリンクを張る。
+既存の `~/.config/nvim` は上書きしてリンクを張る。
 
 ```bash
-# 既存設定があれば退避（無ければ何もしない）
-[ -e ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak
-
+rm -rf ~/.config/nvim
 mkdir -p ~/.config
 ln -s ~/codes/datfile/.config/nvim ~/.config/nvim
 ```
@@ -52,12 +58,10 @@ ln -s ~/codes/datfile/.config/nvim ~/.config/nvim
 
 ### ssh設定の配置
 
-既存の `~/.ssh/config` がある場合は退避してからリンクを張る。
+既存の `~/.ssh/config` は上書きしてリンクを張る。
 
 ```bash
-# 既存設定があれば退避（無ければ何もしない）
-[ -e ~/.ssh/config ] && mv ~/.ssh/config ~/.ssh/config.bak
-
+rm -f ~/.ssh/config
 mkdir -p ~/.ssh
 ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
 ```

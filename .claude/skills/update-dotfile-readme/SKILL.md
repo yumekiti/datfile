@@ -36,12 +36,13 @@ description: Use when a new dotfile/config is added anywhere in this repo (not j
    実際のリポジトリ内パスとホーム側の配置先パスを1:1で対応させる：
 
    ```bash
-   # 既存設定があれば退避（無ければ何もしない）
-   [ -e ~/<ホーム側の対応パス> ] && mv ~/<ホーム側の対応パス> ~/<ホーム側の対応パス>.bak
-
+   rm -rf ~/<ホーム側の対応パス>
    mkdir -p ~/<親ディレクトリ>
    ln -s ~/codes/datfile/<リポジトリ内パス> ~/<ホーム側の対応パス>
    ```
+
+   既存設定は退避せず上書きする方針（このリポジトリでの合意）。対象が単一ファイルの場合は
+   `rm -rf` の代わりに `rm -f` を使う。
 
    例: `.config/tmux/` → `~/.config/tmux`、`.ssh/config` → `~/.ssh/config`
    （後者は親ディレクトリが `~/.ssh` になるだけでディレクトリ/ファイルの違い以外は同じ形式）。
