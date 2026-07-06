@@ -35,14 +35,22 @@ tmux
 ```
 
 新規セッション開始時に自動でこの設定が読み込まれる。すでにセッションを起動済みで設定だけ
-反映したい場合はセッション内で `prefix → r`、またはセッション内のシェルで
+反映したい場合は、以下のいずれかで反映する。
 
-```bash
-tmux source-file ~/.config/tmux/tmux.conf
-```
+- セッション内で `prefix → r`
+- またはセッション内のシェルで `tmux source-file ~/.config/tmux/tmux.conf`
+  （tmuxサーバー未起動の状態でこれを実行すると `error connecting to /tmp/tmux-0/default`
+  になるだけなので、その場合は上の「起動」を先に行う）
+- それでも変更が反映されない場合（配色変数など一部の設定は既存セッションに残ったままに
+  なることがある）は、一度サーバーごと落として起動し直す。
 
-を実行する（tmuxサーバー未起動の状態でこれを実行すると
-`error connecting to /tmp/tmux-0/default` になるだけで、上の「起動」を先にすればよい）。
+  ```bash
+  tmux kill-server
+  tmux
+  ```
+
+  **`kill-server` は起動中の全tmuxセッションを終了する**（各pane内のプロセスも終了する）
+  ので、実行前に必要な作業を保存しておくこと。
 
 ### nvim設定の配置
 
