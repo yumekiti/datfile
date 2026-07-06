@@ -8,6 +8,7 @@
 |---|---|
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
+| `.ssh/config` | SSHのホスト別設定 |
 
 ## セットアップ
 
@@ -49,6 +50,18 @@ ln -s ~/codes/datfile/.config/nvim ~/.config/nvim
 
 [LazyVim](https://github.com/LazyVim/LazyVim)ベースのため、初回起動時にプラグインが自動インストールされる。
 
+### ssh設定の配置
+
+既存の `~/.ssh/config` がある場合は退避してからリンクを張る。
+
+```bash
+# 既存設定があれば退避（無ければ何もしない）
+[ -e ~/.ssh/config ] && mv ~/.ssh/config ~/.ssh/config.bak
+
+mkdir -p ~/.ssh
+ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
+```
+
 ### 設定を追加する場合
 
-新しい設定を追加したら、同様に `.config/<ツール名>` としてこのリポジトリに置き、`ln -s ~/codes/datfile/.config/<ツール名> ~/.config/<ツール名>` でリンクする。編集はリポジトリ側のファイルに対して行えばよく（シンボリックリンク経由のため）、変更はそのまま `git status` / `git diff` で追跡できる。
+このリポジトリは `$HOME` のディレクトリ構造をそのまま再現している（`.config/tmux/` → `~/.config/tmux`、`.ssh/config` → `~/.ssh/config` のように、リポジトリ内のパスとホーム側の配置先が1:1で対応する）。新しい設定を追加する場合も、`$HOME` から見た相対パスと同じ場所にこのリポジトリ内へ置き、`ln -s ~/codes/datfile/<パス> ~/<同じパス>` でリンクする。編集はリポジトリ側のファイルに対して行えばよく（シンボリックリンク経由のため）、変更はそのまま `git status` / `git diff` で追跡できる。
