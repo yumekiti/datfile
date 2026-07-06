@@ -15,7 +15,7 @@
 このリポジトリを任意の場所にクローンし、各設定をシンボリックリンクで `$HOME` 配下に配置する。
 
 ```bash
-git clone https://github.com/yumekiti/datfile ~/codes/datfile
+git clone git@github.com:yumekiti/datfile.git ~/codes/datfile
 ```
 
 ### tmux設定の配置
