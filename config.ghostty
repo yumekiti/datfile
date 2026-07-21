@@ -1,0 +1,20 @@
+# --- 見た目・フォント ---
+font-size = 14
+adjust-cell-height = 10%
+# font-family = "BlexMono Nerd Font Mono"
+
+theme = Mariana
+
+# --- ウィンドウ・透明度 ---
+background-opacity = 0.90
+background-blur-radius = 20
+
+window-padding-x = 10
+window-padding-y = 10
+window-padding-balance = true
+
+# --- Macネイティブな見た目 ---
+macos-titlebar-style = transparent
+macos-window-shadow = true
+
+term = xterm-256color

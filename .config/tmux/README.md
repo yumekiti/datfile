@@ -1,6 +1,6 @@
 # tmux 設定
 
-Tokyo Night配色 + vim風操作 + ステータスバーにネットワーク/CPU/バッテリーを表示する設定。
+端末アプリの背景を活かした Tokyo Night accent 配色 + vim風操作 + ステータスバーにネットワーク/CPU/バッテリーを表示する設定。
 
 ## ファイル構成
 
@@ -40,7 +40,7 @@ prefix → r
   - sync（全pane同時入力）中（黄）: `Sync: ON`
   - コピーモード中（緑）: `Mode: Visual`
   - 通常時（青）: `Session: セッション名`
-  - 直後にwindow一覧（`番号:名前`）を左寄せ表示。今いるwindowだけ背景色（青）が付く
+  - 直後にwindow一覧（`番号:名前`）を左寄せ表示。今いるwindowだけアクセント背景色（青）が付く
 - **右**：ラベル付きの値を4つ並べている。単語は略さず、色だけに依存しないようにしている
   - `Network ↓.. ↑..` — 下り/上り速度（緑=下り、赤=上り）
   - `CPU N.NN` — loadaverage（1分値）
@@ -101,16 +101,19 @@ prefix → r
 
 ## カラーパレット
 
-`tmux.conf` 冒頭で Tokyo Night の色を `%hidden` 変数として定義し、以降 `$BLUE` のような名前で使っている。配色を変えたい場合はここだけ書き換えれば全体に反映される。
+`tmux.conf` 冒頭で端末背景 + Tokyo Night accent の色を `%hidden` 変数として定義し、以降 `$BLUE` のような名前で使っている。配色を変えたい場合はここだけ書き換えれば全体に反映される。
+
+背景は `BG="default"` にしてあるため、Ghostty の `background-opacity` / blur や、ほかの端末アプリのテーマ背景が tmux の pane / status にそのまま通る。端末ごとに背景色を合わせたい場合も、tmux 側で色を固定せず端末側のテーマを変えるだけでよい。
 
 ```
-%hidden BG="#1a1b26"      背景
+%hidden BG="default"      端末アプリのデフォルト背景
 %hidden FG="#a9b1d6"      通常文字
+%hidden ACCENT_FG="#1a1b26" アクセント背景上の文字
 %hidden DIM="#565f89"     非アクティブ/枠線など
-%hidden SEP="#414868"     区切り・パネル背景
+%hidden SEP="#414868"     区切り
 %hidden BLUE="#7aa2f7"    セッション名・時計
 %hidden CYAN="#7dcfff"    CPU・日付
-%hidden PURPLE="#bb9af7"  （予備）
+%hidden PURPLE="#bb9af7"  Network
 %hidden GREEN="#9ece6a"   Visualモード・下り速度・バッテリー高
 %hidden YELLOW="#e0af68"  バッテリー中
 %hidden RED="#f7768e"     Prefixモード・上り速度・バッテリー低
@@ -121,3 +124,4 @@ prefix → r
 - `net_speed.sh` はキャッシュを `${TMPDIR}/tmux_net_<インターフェース名>` に保存し、複数クライアントが同時にアタッチしても壊れないよう一時ファイル→rename の原子的書き込みにしてある。
 - `#(...)` で呼ぶ外部コマンドはtmuxのジョブ機構により**クライアントがアタッチしている時だけ**評価される。デタッチ状態で `tmux display-message` 等から値を覗いても空になるのは仕様（バグではない）。
 - `net_speed.sh` / `cpu.sh` / `battery.sh` は macOS (Darwin) と Linux の両方で動くよう `uname -s` で分岐している（macOS: `route`/`netstat`/`sysctl`/`pmset`、Linux: `ip route`/`/sys/class/net/*/statistics`/`/proc/loadavg`/`/sys/class/power_supply/BAT*`）。バッテリーが無い環境（Linuxのデスクトップ等）ではBattery表示自体が出ないのが仕様。
+
