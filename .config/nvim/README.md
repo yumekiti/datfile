@@ -9,6 +9,7 @@
 - **パンくずリスト**: `nvim-navic`。ステータスラインに現在のシンボル階層(クラス/関数など)を表示
 - **マルチカーソル**: `mg979/vim-visual-multi`。VSCodeのCmd+D相当は `Ctrl-n`
 - **VSCode風キーバインド**: `Ctrl-p` / `Ctrl-Shift-p` / `Ctrl-b`(下記参照)
+- **Git管理(lazygit)**: `brew install lazygit` するとLazyVim標準の `<leader>gg` が自動で有効になる(設定不要)
 
 ## 操作方法
 
@@ -75,6 +76,17 @@
 | キー | 動作 |
 |---|---|
 | `Ctrl-n` | カーソル下の単語を選択、押すたびに次の一致へ拡張(VSCodeのCmd+D相当) |
+
+### Git管理(lazygit)
+
+VSCodeのソース管理パネルに近いUI。ステージ済み/未ステージの差分を並べて表示し、そのままコミット・push/pullまでできる。`brew install lazygit`していれば自動で有効(未インストールだとキー自体が登録されない)。
+
+| キー | 動作 |
+|---|---|
+| `<leader>gg` | lazygitを開く(リポジトリルート) |
+| `<leader>gG` | lazygitを開く(カレントディレクトリ) |
+
+lazygit内では: `Space`でステージ/アンステージ、`c`でコミット、`P`でpush、`p`でpull、`Esc`/`q`で閉じる。
 
 ### 困ったら
 
