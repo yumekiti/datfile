@@ -1,7 +1,8 @@
 {
   "extras": [
     "lazyvim.plugins.extras.dap.core",
-    "lazyvim.plugins.extras.editor.navic"
+    "lazyvim.plugins.extras.editor.navic",
+    "lazyvim.plugins.extras.lang.markdown"
   ],
   "install_version": 8,
   "news": {

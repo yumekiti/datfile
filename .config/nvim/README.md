@@ -10,6 +10,7 @@
 - **マルチカーソル**: `mg979/vim-visual-multi`。VSCodeのCmd+D相当は `Ctrl-n`
 - **VSCode風キーバインド**: `Ctrl-p` / `Ctrl-Shift-p` / `Ctrl-b`(下記参照)
 - **Git管理(lazygit)**: `brew install lazygit` するとLazyVim標準の `<leader>gg` が自動で有効になる(設定不要)
+- **Markdown**: `render-markdown.nvim`で箇条書き・コードブロックをリッチ表示。`markdownlint`(MD013など)は無効化、フォーマットは`prettier`のみ、LSPは`marksman`(`lua/plugins/markdown.lua`)。日本語/専門用語で誤検知が多いため`spell`もmarkdownでは無効化(`lua/config/autocmds.lua`)
 
 ## 操作方法
 
@@ -46,13 +47,26 @@
 | `Ctrl-Shift-p` / `<leader>sC` | コマンドパレット |
 | `<leader><space>` | ファイル検索(別バインド) |
 
-### バッファ(開いているファイル)の切り替え
+### バッファ(開いているファイル・画面上部のタブ)の切り替え
+
+「タブ移動」で普段使うのはこっち(vimの`:tabnew`とは別物)。
 
 | キー | 動作 |
 |---|---|
 | `<S-h>` / `<S-l>` | 前・次のバッファ |
+| `[b` / `]b` | 前・次のバッファ(同じ) |
 | `<leader>bd` | 現在のバッファを閉じる |
 | `<leader>,` | バッファ一覧から選択 |
+
+### vimのタブページ(ウィンドウレイアウトごとのタブ、あまり使わない)
+
+| キー | 動作 |
+|---|---|
+| `<leader><tab><tab>` | 新規タブ |
+| `<leader><tab>]` / `<leader><tab>[` | 次・前のタブ |
+| `<leader><tab>f` / `<leader><tab>l` | 最初・最後のタブ |
+| `<leader><tab>d` | タブを閉じる |
+| `<leader><tab>o` | 他のタブを全部閉じる |
 
 ### 分割・ウィンドウ
 
@@ -87,6 +101,15 @@ VSCodeのソース管理パネルに近いUI。ステージ済み/未ステー�
 | `<leader>gG` | lazygitを開く(カレントディレクトリ) |
 
 lazygit内では: `Space`でステージ/アンステージ、`c`でコミット、`P`でpush、`p`でpull、`Esc`/`q`で閉じる。
+
+### 終了
+
+| キー | 動作 |
+|---|---|
+| `<leader>qq` | 全部まとめて終了(`:qa`と同じ、未保存があれば確認) |
+| `ZZ` | 保存して終了(コロン不要) |
+| `:wqa` | 全部保存してから終了 |
+| `:qa!` | 保存せず強制終了 |
 
 ### 困ったら
 
