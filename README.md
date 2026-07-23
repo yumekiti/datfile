@@ -9,6 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
+| `.bash_profile` | bashのログインシェル設定。`ls`/`cat` を `eza`/`bat` に置き換えるエイリアスと、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化を含む |
 
 ## セットアップ
 
@@ -73,6 +74,26 @@ rm -f ~/.ssh/config
 mkdir -p ~/.ssh
 ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
 ```
+
+### bash設定の配置
+
+既存の `~/.bash_profile` はバックアップを取ってからリンクを張る。
+
+```bash
+[ -e ~/.bash_profile ] && mv ~/.bash_profile ~/.bash_profile.bak
+ln -s ~/codes/datfile/.bash_profile ~/.bash_profile
+```
+
+[eza](https://github.com/eza-community/eza)、[bat](https://github.com/sharkdp/bat)、
+[zoxide](https://github.com/ajeetdsouza/zoxide)を事前にインストールしておく。
+
+```bash
+brew install eza bat zoxide
+```
+
+新規ターミナルを開くと自動で読み込まれる。すでに開いているシェルに反映したい場合は
+`source ~/.bash_profile` を実行する。反映後は `ls`/`cat` が `eza`/`bat` の
+エイリアスとして動作し、`z <キーワード>` でzoxideによるディレクトリジャンプができる。
 
 ### 設定を追加する場合
 
