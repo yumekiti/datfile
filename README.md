@@ -9,7 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
-| `.config/bash/init.sh` | `ls`/`cat` を `eza`/`bat` に置き換えるエイリアスと、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化。`~/.bash_profile` から読み込む |
+| `.config/bash/init.sh` | `ls`/`l`/`cat` を `eza`/`bat` に置き換えるエイリアス（`l`は`-a`付きで隠しファイルも表示）と、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化。`~/.bash_profile` から読み込む |
 
 ## セットアップ
 
@@ -91,6 +91,7 @@ ln -s ~/codes/datfile/.config/bash ~/.config/bash
 ```bash
 grep -qxF 'source ~/.config/bash/init.sh' ~/.bash_profile 2>/dev/null || \
   echo 'source ~/.config/bash/init.sh' >> ~/.bash_profile
+source ~/.bash_profile
 ```
 
 [eza](https://github.com/eza-community/eza)、[bat](https://github.com/sharkdp/bat)、
