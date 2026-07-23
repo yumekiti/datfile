@@ -9,7 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
-| `.bash_profile` | bashのログインシェル設定。`ls`/`cat` を `eza`/`bat` に置き換えるエイリアスと、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化を含む |
+| `.config/bash/init.sh` | `ls`/`cat` を `eza`/`bat` に置き換えるエイリアスと、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化。`~/.bash_profile` から読み込む |
 
 ## セットアップ
 
@@ -75,13 +75,22 @@ mkdir -p ~/.ssh
 ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
 ```
 
-### bash設定の配置
+### bash設定（eza/bat/zoxide）の配置
 
-既存の `~/.bash_profile` はバックアップを取ってからリンクを張る。
+`.config/bash/` は専用ディレクトリなので既存のものがあれば上書きしてリンクを張る。
 
 ```bash
-[ -e ~/.bash_profile ] && mv ~/.bash_profile ~/.bash_profile.bak
-ln -s ~/codes/datfile/.bash_profile ~/.bash_profile
+rm -rf ~/.config/bash
+mkdir -p ~/.config
+ln -s ~/codes/datfile/.config/bash ~/.config/bash
+```
+
+`~/.bash_profile` は既存の内容を保ったまま、読み込み行がなければ追記する
+（すでにある場合は二重追記しない）。
+
+```bash
+grep -qxF 'source ~/.config/bash/init.sh' ~/.bash_profile 2>/dev/null || \
+  echo 'source ~/.config/bash/init.sh' >> ~/.bash_profile
 ```
 
 [eza](https://github.com/eza-community/eza)、[bat](https://github.com/sharkdp/bat)、
