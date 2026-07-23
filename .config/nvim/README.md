@@ -1,4 +1,81 @@
-# 💤 LazyVim
+# 💤 LazyVim (カスタム設定)
 
-A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
-Refer to the [documentation](https://lazyvim.github.io/installation) to get started.
+[LazyVim](https://github.com/LazyVim/LazyVim) ベースの設定。VSCodeに近い使用感を目指して、デバッガ・パンくずリスト・マルチカーソル・見慣れたキーバインドを追加している。
+
+## カスタム内容
+
+- **透過背景**: tmux(`../tmux/tmux.conf`のBG="default")と同じく、端末の背景色をそのまま透過させる(`lua/plugins/colorscheme.lua`)
+- **デバッグ(DAP)**: `nvim-dap` + `nvim-dap-ui`。言語ごとのデバッガは別途lang extraを有効にすると自動設定される
+- **パンくずリスト**: `nvim-navic`。ステータスラインに現在のシンボル階層(クラス/関数など)を表示
+- **マルチカーソル**: `mg979/vim-visual-multi`。VSCodeのCmd+D相当は `Ctrl-n`
+- **VSCode風キーバインド**: `Ctrl-p` / `Ctrl-Shift-p` / `Ctrl-b`(下記参照)
+
+## 操作方法
+
+### ファイル一覧(エクスプローラー)を開く・戻る
+
+| キー | 動作 |
+|---|---|
+| `Ctrl-b` / `<leader>e` | エクスプローラーを開く・閉じる(トグル) |
+| `Ctrl-w h` | (ファイルを開いてカーソルが移った後)左のエクスプローラーへ戻る |
+| `Ctrl-w Ctrl-w` | 開いているウィンドウを順番に切り替え |
+
+### エクスプローラー内の操作
+
+| キー | 動作 |
+|---|---|
+| `Enter` / `l` | ファイルを開く・ディレクトリを開く |
+| `h` | ディレクトリを閉じる |
+| `Backspace` | 1つ上の階層へ |
+| `a` | 新規ファイル/ディレクトリ作成(末尾 `/` でディレクトリ) |
+| `d` | 削除(ゴミ箱に移動) |
+| `r` | リネーム |
+| `Tab` | 複数選択 → `m` で移動、`c` でコピー |
+| `y` / `p` | ヤンク / ペースト(コピー) |
+| `H` | 隠しファイル表示切替 |
+| `.` | このディレクトリをcwdにする |
+| `q` / `Esc` | 閉じる |
+
+### ファイル検索・移動
+
+| キー | 動作 |
+|---|---|
+| `Ctrl-p` / `<leader>ff` | ファイル名であいまい検索(選ぶと一覧は閉じる) |
+| `<leader>fr` | 最近使ったファイル |
+| `Ctrl-Shift-p` / `<leader>sC` | コマンドパレット |
+| `<leader><space>` | ファイル検索(別バインド) |
+
+### バッファ(開いているファイル)の切り替え
+
+| キー | 動作 |
+|---|---|
+| `<S-h>` / `<S-l>` | 前・次のバッファ |
+| `<leader>bd` | 現在のバッファを閉じる |
+| `<leader>,` | バッファ一覧から選択 |
+
+### 分割・ウィンドウ
+
+| キー | 動作 |
+|---|---|
+| `Ctrl-w s` / `Ctrl-w v` | 水平/垂直分割 |
+| `Ctrl-h/j/k/l` | 分割間の移動 |
+| `Ctrl-/` | ターミナルをトグル |
+
+### デバッグ
+
+| キー | 動作 |
+|---|---|
+| `<leader>db` | ブレークポイント切替 |
+| `<leader>dc` | 実行 / 続行 |
+| `<leader>du` | デバッグUIを開く |
+| `<leader>di` / `<leader>do` / `<leader>dO` | ステップイン / アウト / オーバー |
+
+### マルチカーソル
+
+| キー | 動作 |
+|---|---|
+| `Ctrl-n` | カーソル下の単語を選択、押すたびに次の一致へ拡張(VSCodeのCmd+D相当) |
+
+### 困ったら
+
+`<leader>` を押して少し待つと which-key が候補一覧を出すので、そこから探すのが早い。
