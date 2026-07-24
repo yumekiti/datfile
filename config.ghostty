@@ -41,7 +41,7 @@ clipboard-paste-bracketed-safe = false
 # bash 3.2 + starship のhere-doc貼り付けで入力が重複/欠落するため、
 # Ghosttyによるプロンプトマーク等の自動注入を止める。
 shell-integration = none
-command = direct:/opt/homebrew/bin/bash --login
+command = direct:/bin/bash --login
 
 # --- キーバインド設定（画面分割） ---
 #  Cmd+Enter で「下に」分割
