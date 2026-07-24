@@ -9,7 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
-| `.config/bash/init.sh` | `ls`/`l`/`cat`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。`dif` を [difit](https://github.com/yoshiko-pg/difit) のエイリアスとして登録。[zoxide](https://github.com/ajeetdsouza/zoxide)で`cd`を拡張する初期化。`~/.bash_profile` から読み込む |
+| `.config/bash/init.sh` | `ls`/`l`/`cat`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。`vi`はgitリポジトリ内かつ[difit](https://github.com/yoshiko-pg/difit)がインストール済みなら、nvim起動中だけdifitをバックグラウンドで併走させる（nvim終了で自動kill）。`dif` を difit のエイリアスとして登録。[zoxide](https://github.com/ajeetdsouza/zoxide)で`cd`を拡張する初期化。`~/.bash_profile` から読み込む |
 
 ## セットアップ
 
