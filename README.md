@@ -19,6 +19,21 @@
 git clone git@github.com:yumekiti/datfile.git ~/codes/datfile
 ```
 
+### Homebrewでインストールするもの
+
+このリポジトリの設定が利用するツールのうち、Homebrewで入れるものをまとめておく。
+
+| パッケージ | 用途 | 必須/任意 |
+|---|---|---|
+| [eza](https://github.com/eza-community/eza) | `ls`/`l`エイリアス（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
+| [bat](https://github.com/sharkdp/bat) | `cat`エイリアス（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
+| [zoxide](https://github.com/ajeetdsouza/zoxide) | `z`コマンドでのディレクトリジャンプ（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
+| [lazygit](https://github.com/jesseduffield/lazygit) | nvimのGit管理パネル（`<leader>gg`、[.config/nvim/README.md](.config/nvim/README.md)参照） | 任意（未インストールでもキー自体が登録されないだけ） |
+
+```bash
+brew install eza bat zoxide lazygit
+```
+
 ### tmux設定の配置
 
 既存の `~/.config/tmux` は上書きしてリンクを張る。
@@ -94,12 +109,7 @@ grep -qxF 'source ~/.config/bash/init.sh' ~/.bash_profile 2>/dev/null || \
 source ~/.bash_profile
 ```
 
-[eza](https://github.com/eza-community/eza)、[bat](https://github.com/sharkdp/bat)、
-[zoxide](https://github.com/ajeetdsouza/zoxide)を事前にインストールしておく。
-
-```bash
-brew install eza bat zoxide
-```
+前述の「Homebrewでインストールするもの」の`eza`/`bat`/`zoxide`を事前にインストールしておく。
 
 新規ターミナルを開くと自動で読み込まれる。すでに開いているシェルに反映したい場合は
 `source ~/.bash_profile` を実行する。反映後は `ls`/`cat` が `eza`/`bat` の
