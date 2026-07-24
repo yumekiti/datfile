@@ -28,11 +28,20 @@ macos-window-shadow = true
 mouse-hide-while-typing = true
 
 # --- 操作性 ---
-# 選択しただけでクリップボードにコピー
-copy-on-select = true
+# 選択しただけでクリップボードにコピーしない。
+# 大きな貼り付け中に選択内容が混ざる事故を避ける。
+copy-on-select = false
 # クリップボードの読み書きを許可
 clipboard-read = allow
 clipboard-write = allow
+# bracketed paste中でも複数行貼り付けを自動で安全扱いしない。
+clipboard-paste-protection = true
+clipboard-paste-bracketed-safe = false
+
+# bash 3.2 + starship のhere-doc貼り付けで入力が重複/欠落するため、
+# Ghosttyによるプロンプトマーク等の自動注入を止める。
+shell-integration = none
+command = direct:/opt/homebrew/bin/bash --login
 
 # --- キーバインド設定（画面分割） ---
 #  Cmd+Enter で「下に」分割
@@ -75,3 +84,4 @@ palette = 12=#79c0ff
 palette = 13=#d2a8ff
 palette = 14=#56d4dd
 palette = 15=#ffffff
+
