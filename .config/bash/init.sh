@@ -1,7 +1,8 @@
-eval "$(zoxide init bash)"
+eval "$(zoxide init bash --cmd cd)"
 
 alias ls='eza --icons --group-directories-first'
 alias l='eza --icons --group-directories-first -a'
+alias cat='bat --paging=never --style=plain'
 alias c='bat --paging=never --style=plain'
 clipbash() {
   pbpaste | /opt/homebrew/bin/bash
