@@ -9,7 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
-| `.config/bash/init.sh` | `ls`/`l`/`cat`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。[zoxide](https://github.com/ajeetdsouza/zoxide)で`cd`を拡張する初期化。`~/.bash_profile` から読み込む |
+| `.config/bash/init.sh` | `ls`/`l`/`cat`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。`dif` を [difit](https://github.com/yoshiko-pg/difit) のエイリアスとして登録。[zoxide](https://github.com/ajeetdsouza/zoxide)で`cd`を拡張する初期化。`~/.bash_profile` から読み込む |
 
 ## セットアップ
 
@@ -29,9 +29,22 @@ git clone git@github.com:yumekiti/datfile.git ~/codes/datfile
 | [bat](https://github.com/sharkdp/bat) | `cat`/`c`エイリアス（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
 | [zoxide](https://github.com/ajeetdsouza/zoxide) | `cd`でのディレクトリジャンプ（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
 | [lazygit](https://github.com/jesseduffield/lazygit) | nvimのGit管理パネル（`<leader>gg`、[.config/nvim/README.md](.config/nvim/README.md)参照） | 任意（未インストールでもキー自体が登録されないだけ） |
+| [node](https://formulae.brew.sh/formula/node) | 後述の「npmでインストールするもの」の`npm`コマンドを提供 | 任意（difitを使う場合のみ必須） |
 
 ```bash
-brew install eza bat zoxide lazygit
+brew install eza bat zoxide lazygit node
+```
+
+### npmでインストールするもの
+
+nodeに付属する`npm`で入れるものをまとめておく。事前に上記の`node`をインストールしておくこと。
+
+| パッケージ | 用途 | 必須/任意 |
+|---|---|---|
+| [difit](https://github.com/yoshiko-pg/difit) | `dif`エイリアスで使うdiffビューア（後述の「bash設定（eza/bat/zoxide）の配置」） | 任意（未インストールでも`dif`コマンドが動かないだけ） |
+
+```bash
+npm install -g difit
 ```
 
 ### tmux設定の配置

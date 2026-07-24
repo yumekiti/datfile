@@ -4,6 +4,7 @@ alias ls='eza --icons --group-directories-first'
 alias l='eza --icons --group-directories-first -a'
 alias cat='bat --paging=never --style=plain'
 alias c='bat --paging=never --style=plain'
+alias dif='difit'
 clipbash() {
   pbpaste | /opt/homebrew/bin/bash
 }
