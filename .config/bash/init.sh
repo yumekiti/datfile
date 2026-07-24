@@ -20,6 +20,7 @@ clipwrite() {
 
 vi() {
   if command -v difit >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    pkill -f 'difit --keep-alive' 2>/dev/null
     difit --keep-alive >/dev/null 2>&1 &
     disown $! 2>/dev/null
   fi
