@@ -3,6 +3,22 @@
 #
 # バー文字に "#" は使わない: tmuxはジョブ(#())の出力も自身のフォーマット文字列
 # パーサーに通すため、連続した "#" が壊れて消える（"=" ならtmux側で特別扱いされない）。
+#
+# 呼び出し自体を MIN_INTERVAL 秒に間引く（詳細は net_speed.sh / cpu.sh のコメント参照）。
+# Claude Codeがpaneに出力し続けている間はこのスクリプトも1秒間に何度も
+# 再実行されるため、pmset起動自体を間引いて無駄なプロセス生成を防ぐ。
+
+MIN_INTERVAL=1
+OUT_CACHE="${TMPDIR:-/tmp}/tmux_battery_out"
+now=$(date +%s)
+
+if [ -r "$OUT_CACHE" ]; then
+  { IFS= read -r c_ts; IFS= read -r c_out; } < "$OUT_CACHE" 2>/dev/null
+  case "$c_ts" in
+    *[!0-9]*|'') ;;
+    *) [ $(( now - c_ts )) -lt "$MIN_INTERVAL" ] && { printf '%s' "$c_out"; exit 0; } ;;
+  esac
+fi
 
 if [ "$(uname -s)" = "Darwin" ]; then
   info=$(pmset -g batt 2>/dev/null) || exit 0
@@ -41,4 +57,9 @@ fi
 suffix="% "
 [ "$charging" -eq 1 ] && suffix="%+"
 
-printf '#[fg=%s][%s]%3d%s' "$color" "$bar" "$pct" "$suffix"
+out=$(printf '#[fg=%s][%s]%3d%s' "$color" "$bar" "$pct" "$suffix")
+
+tmpfile="${OUT_CACHE}.tmp.$$"
+{ printf '%s\n' "$now"; printf '%s\n' "$out"; } > "$tmpfile" 2>/dev/null && mv -f "$tmpfile" "$OUT_CACHE"
+
+printf '%s' "$out"

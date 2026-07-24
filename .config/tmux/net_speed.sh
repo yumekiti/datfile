@@ -6,14 +6,22 @@
 # 同時に読み書きしても、書きかけの壊れた行を掴んで変な値になるのを防ぐ）。
 # 数値部分は幅を固定しているので、桁数が変わってもステータスバー全体がガタつかない。
 #
-# サンプリング間隔は最低 MIN_INTERVAL 秒を保証する（チェックポイントを自前で
-# 間引く）。tmux通常は status-interval(2秒)ごとにしかこのスクリプトを呼ばないが、
-# ai_thinking.sh の常駐スピナーが応答中 refresh-client -S を高頻度(0.3秒毎)に
-# 叩くと、それに連動してこのジョブも同じ頻度で再実行されることがある。dt を
-# date +%s の秒精度のまま使うと、1秒未満の間隔で連続実行された際にバイト差分が
-# ほぼゼロなのに整数除算で 0B に丸められてしまう（実際に発生した不具合）。
+# 呼び出し自体を MIN_INTERVAL 秒に間引く（OUT_CACHE）:
+# tmuxは status-interval(2秒)ごとにしかこのスクリプトを呼ばない、という想定は
+# 実際には成立しない。tmuxは pane の出力があるたびにもstatus lineを再描画し、
+# その都度 #() job を再実行するため、Claude Codeが動いている（＝paneに出力が
+# 出続けている）間は実測で1秒間に何度もこのスクリプトが呼ばれる（ai_thinking.sh
+# の常駐スピナーが refresh-client -S を0.3秒毎に叩く間はさらに顕著）。
+# netstat/route を毎回叩くとプロセスが積み上がり、CPU負荷にもなるため、直近の
+# 描画結果をそのまま使い回して外部コマンドの起動自体をスキップする。
+#
+# サンプリング間隔も同じ MIN_INTERVAL 秒を保証する（レート計算用チェックポイント）。
+# dt を date +%s の秒精度のまま使うと、1秒未満の間隔で連続実行された際にバイト
+# 差分がほぼゼロなのに整数除算で 0B に丸められてしまう（実際に発生した不具合）。
 # そのため直近の実測チェックポイントから MIN_INTERVAL 秒経つまでは新規計測を
 # せず、前回算出済みのレートをそのまま使い回す。
+
+MIN_INTERVAL=1
 
 if [ "$(uname -s)" = "Darwin" ]; then
   IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
@@ -23,7 +31,25 @@ else
 fi
 
 CACHE="${TMPDIR:-/tmp}/tmux_net_${IFACE}"
-MIN_INTERVAL=1
+OUT_CACHE="${CACHE}.out"
+now=$(date +%s)
+
+# 直近の描画結果が MIN_INTERVAL 秒以内ならそれをそのまま返し、以降の
+# netstat/route/fmt(awk) 呼び出しを丸ごと省略する。
+if [ -r "$OUT_CACHE" ]; then
+  { IFS= read -r c_ts; IFS= read -r c_out; } < "$OUT_CACHE" 2>/dev/null
+  case "$c_ts" in
+    *[!0-9]*|'') ;;
+    *) [ $(( now - c_ts )) -lt "$MIN_INTERVAL" ] && { printf '%s' "$c_out"; exit 0; } ;;
+  esac
+fi
+
+emit() {
+  local tmpfile="${OUT_CACHE}.tmp.$$"
+  { printf '%s\n' "$now"; printf '%s\n' "$1"; } > "$tmpfile" 2>/dev/null && mv -f "$tmpfile" "$OUT_CACHE"
+  printf '%s' "$1"
+  exit 0
+}
 
 if [ "$(uname -s)" = "Darwin" ]; then
   read -r rx tx < <(netstat -ibn 2>/dev/null | awk -v i="$IFACE" '$1==i{print $7, $10; exit}')
@@ -31,11 +57,9 @@ else
   rx=$(cat "/sys/class/net/${IFACE}/statistics/rx_bytes" 2>/dev/null)
   tx=$(cat "/sys/class/net/${IFACE}/statistics/tx_bytes" 2>/dev/null)
 fi
-now=$(date +%s)
 
 if [ -z "$rx" ] || [ -z "$tx" ]; then
-  printf '#[fg=#565f89]   no net'
-  exit 0
+  emit '#[fg=#565f89]   no net'
 fi
 
 fmt() {
@@ -57,8 +81,7 @@ case "$p_now $p_rx $p_tx $p_drx $p_dtx" in
   *[!0-9\ ]*|"    ")
     tmpfile="${CACHE}.tmp.$$"
     printf '%s %s %s %s %s\n' "$now" "$rx" "$tx" 0 0 > "$tmpfile" && mv -f "$tmpfile" "$CACHE"
-    printf '#[fg=#9ece6a]↓%s #[fg=#f7768e]↑%s' "$(fmt 0)" "$(fmt 0)"
-    exit 0
+    emit "$(printf '#[fg=#9ece6a]↓%s #[fg=#f7768e]↑%s' "$(fmt 0)" "$(fmt 0)")"
     ;;
 esac
 
@@ -81,4 +104,4 @@ else
   dtx=$p_dtx
 fi
 
-printf '#[fg=#9ece6a]↓%s #[fg=#f7768e]↑%s' "$(fmt "$drx")" "$(fmt "$dtx")"
+emit "$(printf '#[fg=#9ece6a]↓%s #[fg=#f7768e]↑%s' "$(fmt "$drx")" "$(fmt "$dtx")")"

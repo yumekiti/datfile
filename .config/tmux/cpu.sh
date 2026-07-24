@@ -3,6 +3,25 @@
 #
 # Linuxは/proc/statの前回サンプルとの差分から算出。net_speed.shと同じく
 # キャッシュは「一時ファイルに書いてからrename」で原子的に更新する。
+#
+# 呼び出し自体を MIN_INTERVAL 秒に間引く（詳細は net_speed.sh のコメント参照）。
+# これが無いと、Claude Codeがpaneに出力し続けている間はこのスクリプトが
+# 1秒間に何度も再実行され、macOSでは `top -l 1`（1回あたり数百ms）が
+# 積み上がって多重実行される（測定自体がCPU負荷を生む自己参照的な悪化）。
+# Linuxの差分計算も dt がほぼ0になり値が不安定になる、net_speed.shで
+# 実際に踏んだのと同種の不具合を踏む。
+
+MIN_INTERVAL=1
+OUT_CACHE="${TMPDIR:-/tmp}/tmux_cpu_out"
+now=$(date +%s)
+
+if [ -r "$OUT_CACHE" ]; then
+  { IFS= read -r c_ts; IFS= read -r c_out; } < "$OUT_CACHE" 2>/dev/null
+  case "$c_ts" in
+    *[!0-9]*|'') ;;
+    *) [ $(( now - c_ts )) -lt "$MIN_INTERVAL" ] && { printf '%s' "$c_out"; exit 0; } ;;
+  esac
+fi
 
 if [ "$(uname -s)" = "Darwin" ]; then
   pct=$(top -l 1 -n 0 2>/dev/null | awk -F'[:,]' '/CPU usage/{gsub(/[ %]/,"",$4); print 100-$4}')
@@ -45,4 +64,9 @@ elif [ "$pct" -ge 50 ]; then color="#e0af68"
 else                          color="#9ece6a"
 fi
 
-printf '#[fg=%s]%3d%%' "$color" "$pct"
+out=$(printf '#[fg=%s]%3d%%' "$color" "$pct")
+
+tmpfile="${OUT_CACHE}.tmp.$$"
+{ printf '%s\n' "$now"; printf '%s\n' "$out"; } > "$tmpfile" 2>/dev/null && mv -f "$tmpfile" "$OUT_CACHE"
+
+printf '%s' "$out"

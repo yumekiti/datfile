@@ -8,7 +8,7 @@
 |---|---|
 | `tmux.conf` | 本体設定。tmux 3.1以降は `~/.tmux.conf` が無ければ自動でこのパスを読むので、起動オプション不要 |
 | `net_speed.sh` | ステータスバー右側の Network 値（↓下り/↑上り）を出力 |
-| `cpu.sh` | ステータスバー右側の CPU 値（loadaverageの1分値）を出力 |
+| `cpu.sh` | ステータスバー右側の CPU 値（使用率%、色分け）を出力 |
 | `battery.sh` | ステータスバー右側の Battery 値（`[####-]` バー + 残量%）を出力 |
 | `ai_thinking.sh` | Claude Codeの `UserPromptSubmit` フックから呼ばれ、応答中のwindowに `@ai_thinking` フラグを立て、brailleスピナー（`@ai_spinner_frame`）を回す常駐ループを管理する（後述） |
 | `win_icon.sh` | 現在未使用。以前ウィンドウ一覧にプログラム名アイコンを出す用に作ったが、中央表示自体をオフにしたため呼ばれていない |
@@ -33,7 +33,7 @@ prefix → r
 ## ステータスバーの見方
 
 ```
- Session: main         Network ↓12K ↑3K  CPU 1.83  Battery [##---] 60%   14:32  07/05(Sat)
+ Session: main         Network ↓12K ↑3K  CPU 31%  Memory 69%  Battery [##---] 60%   14:32  07/05(Sat)
 ```
 
 - **左**：状態表示＋window一覧。色だけでなく文字でも分かるようにしてある。複数の状態が同時に起きても重ならないよう優先順位で1つだけ表示する
@@ -42,11 +42,11 @@ prefix → r
   - コピーモード中（緑）: `Mode: Visual`
   - 通常時（青）: `Session: セッション名`
   - 直後にwindow一覧（`番号:名前`）を左寄せ表示。今いるwindowだけアクセント背景色（青）が付く
-  - Claude Codeがそのwindow内のいずれかのpaneで応答中（プロンプト送信〜応答完了の間）は、window名の手前に緑文字のbrailleスピナー（`⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`を約300msごとにコマ送り）が付く（`Session: main  ⠙ 1:main` のように表示される）。Claude Code側の `~/.claude/settings.json` に登録した `UserPromptSubmit`（応答開始）フックから `ai_thinking.sh` が呼ばれ、window option `@ai_thinking` を立てたときに常駐ループを1本起動し、`@ai_spinner_frame` を書き換えては `tmux refresh-client -S` で明示的に再描画させて回している（`#(...)`job方式だと"status lineは1秒に1回までしか再描画されない"というtmuxのハード制限に当たるため、あえてjobを使っていない）。応答終了の検知は`Stop`/`PostToolUse`フックには頼らず（`Stop`はユーザーの中断では発火しない既知の制約があり、ハートビート監視も中断から消えるまでの遅延が大きくUX的に不十分だったため不採用）、常駐ループ自身がClaude CodeのTUI最下部に出る`esc to interrupt`という文字列をpaneから直接ポーリングして検知している。この文字列が連続3回（約0.9秒）見えなくなったら応答終了とみなしてループを止める（1回のミスで即オフにすると、ツール呼び出しの合間などの一瞬の描画抜けを誤検知してスピナーが早期に消えるため、猶予を設けている）。tmux外や `$TMUX_PANE` が無い環境では何もしない
-- **右**：ラベル付きの値を4つ並べている。単語は略さず、色だけに依存しないようにしている
+  - Claude Codeがそのwindow内のいずれかのpaneで応答中（プロンプト送信〜応答完了の間）は、window名の手前に緑文字のbrailleスピナー（`⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`を約300msごとにコマ送り）が付く（`Session: main  ⠙ 1:main` のように表示される）。Claude Code側の `~/.claude/settings.json` に登録した `UserPromptSubmit`（応答開始）フックから `ai_thinking.sh` が呼ばれ、window option `@ai_thinking` を立てたときに常駐ループを1本起動し、`@ai_spinner_frame` を書き換えては `tmux refresh-client -S` で明示的に再描画させて回している（`#(...)`job方式だと"status lineは1秒に1回までしか再描画されない"というtmuxのハード制限に当たるため、あえてjobを使っていない）。応答終了の検知は`Stop`/`PostToolUse`フックには頼らず（`Stop`はユーザーの中断では発火しない既知の制約があり、ハートビート監視も中断から消えるまでの遅延が大きくUX的に不十分だったため不採用）、常駐ループ自身がClaude CodeのTUI最下部に出る`esc to interrupt`という文字列をpaneから直接ポーリングして検知している。この文字列が連続3回（約0.9秒）見えなくなったら応答終了とみなしてループを止める（1回のミスで即オフにすると、ツール呼び出しの合間などの一瞬の描画抜けを誤検知してスピナーが早期に消えるため、猶予を設けている）。ただしミスカウントは「一度でもヒント文字列を検知した後」しか始めない。応答開始直後はTUIがまだヒント文字列を描画し切っていないことがあり、これを含めてミス扱いにすると本当は応答中なのにループが数百ms〜1秒で自己終了し、スピナーがほぼ一瞬しか点かない不具合になる（実際に発生を確認）。tmux外や `$TMUX_PANE` が無い環境では何もしない
+- **右**：ラベル付きの値を並べている。単語は略さず、色だけに依存しないようにしている
   - `Network ↓.. ↑..` — 下り/上り速度（緑=下り、赤=上り）
-  - `CPU N.NN` — loadaverage（1分値）
-  - `Battery [#####] NNN%` — `#`が塗りつぶし本数（5段階）。充電中は`%+`と表示
+  - `CPU NN%` / `Memory NN%` — 使用率。80%以上=赤、50%以上=黄、それ未満=緑
+  - `Battery [#####] NNN%` — `=`が塗りつぶし本数（6段階）。充電中は`%+`と表示
   - 時刻・日付（曜日）
 
 すべて絵文字やNerd Font専用アイコンを使わず、標準的な文字だけで構成している（環境によって表示が崩れないようにするため）。
@@ -126,4 +126,5 @@ prefix → r
 - `net_speed.sh` はキャッシュを `${TMPDIR}/tmux_net_<インターフェース名>` に保存し、複数クライアントが同時にアタッチしても壊れないよう一時ファイル→rename の原子的書き込みにしてある。
 - `#(...)` で呼ぶ外部コマンドはtmuxのジョブ機構により**クライアントがアタッチしている時だけ**評価される。デタッチ状態で `tmux display-message` 等から値を覗いても空になるのは仕様（バグではない）。
 - `net_speed.sh` / `cpu.sh` / `battery.sh` は macOS (Darwin) と Linux の両方で動くよう `uname -s` で分岐している（macOS: `route`/`netstat`/`sysctl`/`pmset`、Linux: `ip route`/`/sys/class/net/*/statistics`/`/proc/loadavg`/`/sys/class/power_supply/BAT*`）。バッテリーが無い環境（Linuxのデスクトップ等）ではBattery表示自体が出ないのが仕様。
+- `net_speed.sh` / `cpu.sh` / `mem.sh` / `battery.sh` はいずれも `${TMPDIR}/tmux_*_out` に直近の描画結果を1秒(`MIN_INTERVAL`)キャッシュし、それより高頻度に呼ばれた場合は外部コマンド（`top`/`netstat`/`vm_stat`/`pmset`等）を一切起動せずキャッシュをそのまま返す。tmuxは「status-intervalごとにしか`#()`jobを呼ばない」わけではなく、paneに出力があるたびにも再描画して`#()`jobを再実行するため、Claude Codeが動いている（＝paneが出力し続けている）間はこれらのスクリプトが実測で1秒間に数十回呼ばれることがあり、キャッシュ無しだと外部コマンドが積み上がって負荷になったり（特に`top`は1回数百ms掛かるため多重実行されやすい）、差分計算系の値（旧`net_speed.sh`）が不安定になったりする。ステータスバーの値がガタつく/重いと感じたら、まずこのキャッシュ層が意図通り効いているかを疑う。
 

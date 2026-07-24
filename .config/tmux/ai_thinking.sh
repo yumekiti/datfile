@@ -27,6 +27,14 @@ POLL_INTERVAL=0.3
 # いるのにスピナーが消えて「止まった」ように見えるため、連続でこの回数ミスする
 # までは「応答終了」と判定しない（約 POLL_INTERVAL * MISS_THRESHOLD 秒の猶予）。
 MISS_THRESHOLD=3
+# フック発火直後はまだTUIがヒント文字列を描画し切っていないことがある
+# （実際に確認: 応答開始直後の数百ms〜1秒はまだ描画されておらず、そのまま
+# だとMISS_THRESHOLD回連続ミスして本当に応答中なのにスピナーが即オフになる
+# 不具合があった）。そのため「一度もヒントを見ていない」間はミス扱いにせず、
+# 最初にヒントを検知してから初めてミスカウントを始める。ただし文字列が
+# 想定と変わった等で永遠に見えないケースの保険として、STARTUP_GRACE回
+# 経ってもまだ一度も見えなければ諦めてオフにする。
+STARTUP_GRACE=50
 FRAMES=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
 
 [ -n "$TMUX_PANE" ] || exit 0
@@ -50,19 +58,24 @@ case "$1" in
         trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
         i=0
         misses=0
+        seen=0
         n=${#FRAMES[@]}
         while true; do
           # 起動直後の1回目だけはヒント文字列がまだ描画されていない可能性が
           # あるので判定をスキップする（即座に誤ってオフにしないため）。
           if [ $i -gt 0 ]; then
             if tmux capture-pane -p -t "$TMUX_PANE" 2>/dev/null | grep -q "esc to interrupt"; then
+              seen=1
               misses=0
-            else
+            elif [ "$seen" -eq 1 ]; then
               misses=$((misses + 1))
               if [ "$misses" -ge "$MISS_THRESHOLD" ]; then
                 tmux set-option -w -t "$TMUX_PANE" -u @ai_thinking 2>/dev/null
                 break
               fi
+            elif [ "$i" -ge "$STARTUP_GRACE" ]; then
+              tmux set-option -w -t "$TMUX_PANE" -u @ai_thinking 2>/dev/null
+              break
             fi
           fi
 

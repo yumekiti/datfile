@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 # メモリ使用率(%)を色付きで出す（tmux設定内でのクォート崩れを避けるため別ファイル化）
+#
+# 呼び出し自体を MIN_INTERVAL 秒に間引く（詳細は net_speed.sh / cpu.sh のコメント参照）。
+# Claude Codeがpaneに出力し続けている間はこのスクリプトも1秒間に何度も
+# 再実行されるため、vm_stat/sysctlの起動自体を間引いて無駄なプロセス生成を防ぐ。
+
+MIN_INTERVAL=1
+OUT_CACHE="${TMPDIR:-/tmp}/tmux_mem_out"
+now=$(date +%s)
+
+if [ -r "$OUT_CACHE" ]; then
+  { IFS= read -r c_ts; IFS= read -r c_out; } < "$OUT_CACHE" 2>/dev/null
+  case "$c_ts" in
+    *[!0-9]*|'') ;;
+    *) [ $(( now - c_ts )) -lt "$MIN_INTERVAL" ] && { printf '%s' "$c_out"; exit 0; } ;;
+  esac
+fi
 
 if [ "$(uname -s)" = "Darwin" ]; then
   vmstat=$(vm_stat 2>/dev/null)
@@ -36,4 +52,9 @@ elif [ "$pct" -ge 50 ]; then color="#e0af68"
 else                          color="#9ece6a"
 fi
 
-printf '#[fg=%s]%3d%%' "$color" "$pct"
+out=$(printf '#[fg=%s]%3d%%' "$color" "$pct")
+
+tmpfile="${OUT_CACHE}.tmp.$$"
+{ printf '%s\n' "$now"; printf '%s\n' "$out"; } > "$tmpfile" 2>/dev/null && mv -f "$tmpfile" "$OUT_CACHE"
+
+printf '%s' "$out"
