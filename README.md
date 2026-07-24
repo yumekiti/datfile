@@ -9,7 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
-| `.config/bash/init.sh` | `ls`/`l`/`vi` を `eza`/`nvim` に置き換えるエイリアス/関数、対話表示時だけ `cat` を `bat`（ページャなし）にする安全な関数（リダイレクト/パイプ時は本物の `cat`）、[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化。`~/.bash_profile` から読み込む |
+| `.config/bash/init.sh` | `ls`/`l`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。[zoxide](https://github.com/ajeetdsouza/zoxide)（`z`コマンド）の初期化。`cat` は上書きしない。`~/.bash_profile` から読み込む |
 
 ## セットアップ
 
@@ -26,7 +26,7 @@ git clone git@github.com:yumekiti/datfile.git ~/codes/datfile
 | パッケージ | 用途 | 必須/任意 |
 |---|---|---|
 | [eza](https://github.com/eza-community/eza) | `ls`/`l`エイリアス（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
-| [bat](https://github.com/sharkdp/bat) | 対話表示時だけ使う `cat` 関数（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
+| [bat](https://github.com/sharkdp/bat) | `c`エイリアス（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
 | [zoxide](https://github.com/ajeetdsouza/zoxide) | `z`コマンドでのディレクトリジャンプ（後述の「bash設定（eza/bat/zoxide）の配置」） | 必須（bash設定を使う場合） |
 | [lazygit](https://github.com/jesseduffield/lazygit) | nvimのGit管理パネル（`<leader>gg`、[.config/nvim/README.md](.config/nvim/README.md)参照） | 任意（未インストールでもキー自体が登録されないだけ） |
 
@@ -112,8 +112,8 @@ source ~/.bash_profile
 前述の「Homebrewでインストールするもの」の`eza`/`bat`/`zoxide`を事前にインストールしておく。
 
 新規ターミナルを開くと自動で読み込まれる。すでに開いているシェルに反映したい場合は
-`source ~/.bash_profile` を実行する。反映後は `ls`/`cat`/`vi` が `eza`/`bat`（ページャなし、対話表示時のみ）/`nvim` の
-エイリアスとして動作し、`z <キーワード>` でzoxideによるディレクトリジャンプができる。
+`source ~/.bash_profile` を実行する。反映後は `ls`/`c`/`vi` が `eza`/`bat`（ページャなし）/`nvim` の
+エイリアスとして動作し、`z <キーワード>` でzoxideによるディレクトリジャンプができる。`cat` は本物の `cat` のまま残す。
 
 ### 設定を追加する場合
 
