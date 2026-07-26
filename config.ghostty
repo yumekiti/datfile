@@ -3,7 +3,8 @@
 font-size = 14
 # 行間を少し広げてモダンにする
 adjust-cell-height = 10%
-# フォントファミリー（tmuxのPowerline矢印を表示するのに必要）
+# フォントファミリー（nvim/LazyVimのファイルアイコン等Nerd Font依存表示に使う。
+# tmuxのPowerline風矢印は標準Unicode文字に変更したためNerd Font不要）
 # このファミリーはThin〜SemiBoldまで複数ウェイトを内包しているため、CoreTextの
 # トレイト（bold/italic）ベースの検索だけではBold/Italic書体を一意に解決できず
 # （font_shared_grid_set: font-family bold not foundエラーとなりフォールバック
