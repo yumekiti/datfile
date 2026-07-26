@@ -16,6 +16,9 @@ font-style-bold-italic = "Bold Italic"
 # テーマ
 theme = Mariana
 
+# TERMをxterm-256colorに統一（tmuxのdefault-terminalと合わせる）
+term = xterm-256color
+
 # --- ウィンドウ・透明度 ---
 # 背景を透過させてブラー（すりガラス効果）を入れる
 background-opacity = 0.65
