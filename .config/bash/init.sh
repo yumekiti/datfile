@@ -1,10 +1,51 @@
 eval "$(zoxide init bash --cmd cd)"
 
-alias ls='eza --icons --group-directories-first'
-alias l='eza --icons --group-directories-first -a'
+if [[ $- == *i* ]]; then
+  for bash_completion in \
+    /opt/homebrew/etc/profile.d/bash_completion.sh \
+    /usr/local/etc/profile.d/bash_completion.sh \
+    /etc/bash_completion; do
+    if [ -r "$bash_completion" ]; then
+      . "$bash_completion"
+      break
+    fi
+  done
+
+  for blesh in \
+    "$HOME/.local/share/blesh/ble.sh" \
+    /opt/homebrew/share/blesh/ble.sh \
+    /usr/local/share/blesh/ble.sh; do
+    if [ -r "$blesh" ]; then
+      . "$blesh"
+      break
+    fi
+  done
+
+  for bashopt in autocd cdspell dirspell checkwinsize histappend; do
+    shopt -s "$bashopt" 2>/dev/null || true
+  done
+
+  bind 'set completion-ignore-case on' 2>/dev/null || true
+  bind 'set show-all-if-ambiguous on' 2>/dev/null || true
+  bind 'set show-all-if-unmodified on' 2>/dev/null || true
+  bind 'set menu-complete-display-prefix on' 2>/dev/null || true
+  bind 'set colored-stats on' 2>/dev/null || true
+  bind 'set colored-completion-prefix on' 2>/dev/null || true
+  bind 'TAB:menu-complete' 2>/dev/null || true
+  bind '"\e[Z": menu-complete-backward' 2>/dev/null || true
+  bind '"\e[A": history-search-backward' 2>/dev/null || true
+  bind '"\e[B": history-search-forward' 2>/dev/null || true
+  bind '"\C-p": history-search-backward' 2>/dev/null || true
+  bind '"\C-n": history-search-forward' 2>/dev/null || true
+fi
+
+alias ls='eza --group-directories-first'
+alias l='eza --group-directories-first -a'
 alias cat='bat --paging=never --style=plain'
 alias c='bat --paging=never --style=plain'
 alias dif='difit'
+alias v='code .'
+alias x='codex'
 clipbash() {
   pbpaste | /opt/homebrew/bin/bash
 }
@@ -35,4 +76,3 @@ vi() {
     nvim "$@"
   fi
 }
-

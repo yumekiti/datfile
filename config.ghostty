@@ -24,6 +24,8 @@ term = xterm-256color
 # 背景を透過させてブラー（すりガラス効果）を入れる
 background-opacity = 0.65
 background-blur-radius = 2
+# 非アクティブな分割ペインを薄暗くしない
+unfocused-split-opacity = 1
 
 # ウィンドウ内の余白を入れて圧迫感を減らす
 window-padding-x = 10
@@ -95,4 +97,3 @@ palette = 12=#79c0ff
 palette = 13=#d2a8ff
 palette = 14=#56d4dd
 palette = 15=#ffffff
-
