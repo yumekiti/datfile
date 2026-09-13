@@ -129,16 +129,18 @@ ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
 ### /etc/hostsの配置
 
 `etc/hosts` は `/etc/hosts` に対応する。他の設定と異なり `$HOME` 配下ではなく
-システムパスのため、配置には `sudo` が必要。既存の `/etc/hosts` は上書きして
-リンクを張る。
+システムパスのため配置には `sudo` が必要で、かつmacOSがシンボリックリンクを
+嫌う（DNS解決が不安定になることがある）ため、他の設定のようにリンクを張らず
+コピーで配置する。既存の `/etc/hosts` は上書きし、DNSキャッシュデーモンを
+再起動して反映させる。
 
 ```bash
-sudo rm -f /etc/hosts
-sudo ln -s ~/codes/datfile/etc/hosts /etc/hosts
+sudo rm -f /etc/hosts && sudo cp ~/codes/datfile/etc/hosts /etc/hosts && sudo killall -HUP mDNSResponder
 ```
 
-編集する場合もリポジトリ側の `etc/hosts` に対して行う（シンボリックリンク経由のため）。
-反映確認は以下で行う。
+コピーのためリポジトリ側と `/etc/hosts` は自動では同期しない。編集は
+リポジトリ側の `etc/hosts` に対して行い、変更のたびに上記コマンドで
+再配置する。反映確認は以下で行う。
 
 ```bash
 cat /etc/hosts
