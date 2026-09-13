@@ -1,3 +1,5 @@
+ssh-add ~/.ssh/id_ed25519
+
 eval "$(zoxide init bash --cmd cd)"
 
 if [[ $- == *i* ]]; then

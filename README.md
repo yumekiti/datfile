@@ -9,6 +9,7 @@
 | `.config/tmux/` | tmux設定。詳細は [.config/tmux/README.md](.config/tmux/README.md) 参照 |
 | `.config/nvim/` | Neovim設定（[LazyVim](https://github.com/LazyVim/LazyVim)ベース） |
 | `.ssh/config` | SSHのホスト別設定 |
+| `etc/hosts` | `/etc/hosts`（他と異なり`$HOME`配下ではなくシステムパスのため配置にsudoが必要） |
 | `config.ghostty` | [Ghostty](https://ghostty.org/)の設定（フォント、テーマ、背景透過、キーバインド等） |
 | `.config/bash/init.sh` | `ls`/`l`/`cat`/`c`/`vi` を `eza`/`bat`（ページャなし）/`nvim` に置き換えるエイリアス/関数。`vi`はgitリポジトリ内かつ[difit](https://github.com/yoshiko-pg/difit)がインストール済みなら、前回`vi`で起動したdifitをkillしてから`--keep-alive`付きで新しく起動する（nvimを閉じたりブラウザをリロードしたりしても落ちない。起動しっぱなしで積み上がらないよう次回`vi`実行時に前回分を片付ける）。`dif` を difit のエイリアスとして登録。[zoxide](https://github.com/ajeetdsouza/zoxide)で`cd`を拡張する初期化。`~/.bash_profile` から読み込む |
 
@@ -123,6 +124,24 @@ ln -s ~/codes/datfile/.config/nvim ~/.config/nvim
 rm -f ~/.ssh/config
 mkdir -p ~/.ssh
 ln -s ~/codes/datfile/.ssh/config ~/.ssh/config
+```
+
+### /etc/hostsの配置
+
+`etc/hosts` は `/etc/hosts` に対応する。他の設定と異なり `$HOME` 配下ではなく
+システムパスのため、配置には `sudo` が必要。既存の `/etc/hosts` は上書きして
+リンクを張る。
+
+```bash
+sudo rm -f /etc/hosts
+sudo ln -s ~/codes/datfile/etc/hosts /etc/hosts
+```
+
+編集する場合もリポジトリ側の `etc/hosts` に対して行う（シンボリックリンク経由のため）。
+反映確認は以下で行う。
+
+```bash
+cat /etc/hosts
 ```
 
 ### bash設定（eza/bat/zoxide）の配置
